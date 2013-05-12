@@ -6,7 +6,7 @@ var SnakeGame = function(canvas_id) {
     this.delay = 80;
     this.grid_size = 20;
     this.snake = new Snake(5, 10);
-    this.food = new GrowFood(this.width / this.grid_size, this.height / this.grid_size);
+    this.food = this.pick_random_food();
     this.running = true;
 }
 SnakeGame.prototype.game_loop = function() {
@@ -24,7 +24,7 @@ SnakeGame.prototype.update_world = function() {
     }
     if (this.food.collided(this.snake)) {
         this.food.eaten(this);
-        this.food = new GrowFood(this.width / this.grid_size, this.height / this.grid_size);
+        this.food = this.pick_random_food();
     }
 }
 SnakeGame.prototype.draw_world = function () {
@@ -43,6 +43,14 @@ SnakeGame.prototype.draw_grid = function(color) {
     this.context.strokeStyle = color;
     this.context.lineWidth = 1.0;
     this.context.strokeRect(0, 0, this.width, this.height)
+}
+SnakeGame.prototype.pick_random_food = function() {
+    var food = new GrowFood(this.width / this.grid_size, this.height / this.grid_size);;
+    var random = Math.floor(Math.random() * 100) + 1;
+    if (random > 80) {
+        food = new ExtraGrowFood(this.width / this.grid_size, this.height / this.grid_size);
+    }
+    return food;
 }
 SnakeGame.prototype.key_hit = function(key) {
     // Change snake direction
