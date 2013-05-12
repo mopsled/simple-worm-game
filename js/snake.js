@@ -54,13 +54,13 @@ SnakeGame.prototype.draw_grid = function(color) {
 SnakeGame.prototype.key_hit = function(key) {
 	// Change snake direction
 	if (key.keyCode == 38) {
-		this.snake.direction = Direction.UP;
+		this.snake.apply_direction(Direction.UP);
 	} else if (key.keyCode == 40) {
-		this.snake.direction = Direction.DOWN;
+		this.snake.apply_direction(Direction.DOWN);
 	} else if (key.keyCode == 37) {
-		this.snake.direction = Direction.LEFT;
+		this.snake.apply_direction(Direction.LEFT);
 	} else if (key.keyCode == 39) {
-		this.snake.direction = Direction.RIGHT;
+		this.snake.apply_direction(Direction.RIGHT);
 	}
 }
 
@@ -71,21 +71,15 @@ var Snake = function(begin_x, begin_y) {
 	this.direction = Direction.RIGHT;
 }
 Snake.prototype.move = function() {
-	var head = this.body[0];
-	var next = {};
-	if (this.direction == Direction.LEFT) {
-		next = {x: head.x-1, y: head.y};
-	} else if (this.direction == Direction.RIGHT) {
-		next = {x: head.x+1, y: head.y};
-	} else if (this.direction == Direction.UP) {
-		next = {x: head.x, y: head.y-1};
-	} else if (this.direction == Direction.DOWN) {
-		next = {x: head.x, y: head.y+1};
-	}
+	var next = this.next_position();
 	this.body.pop();
 	this.body.unshift(next);
 }
 Snake.prototype.grow = function() {
+	var next = this.next_position();
+	this.body.unshift(next);
+}
+Snake.prototype.next_position = function() {
 	var head = this.body[0];
 	var next = {};
 	if (this.direction == Direction.LEFT) {
@@ -97,7 +91,7 @@ Snake.prototype.grow = function() {
 	} else if (this.direction == Direction.DOWN) {
 		next = {x: head.x, y: head.y+1};
 	}
-	this.body.unshift(next);
+	return next;
 }
 Snake.prototype.draw = function(game) {
 	game.context.fillStyle = "#333333";
@@ -106,11 +100,19 @@ Snake.prototype.draw = function(game) {
 		game.context.fillRect(snake_part.x * game.grid_size, snake_part.y * game.grid_size, game.grid_size, game.grid_size)
 	}
 }
+Snake.prototype.apply_direction = function(new_direction) {
+	if (!Direction.are_opposite(this.direction, new_direction)) {
+		this.direction = new_direction;
+	}
+}
 Direction = {
-	LEFT: 0,
+	LEFT: -1,
 	RIGHT: 1,
-	UP: 2,
-	DOWN: 3
+	UP: -2,
+	DOWN: 2,
+	are_opposite: function(a, b) {
+		return (a == -b);
+	}
 }
 
 // Food
