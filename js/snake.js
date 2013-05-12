@@ -43,7 +43,7 @@ SnakeGame.prototype.draw_backgorund = function(color) {
 }
 SnakeGame.prototype.draw_grid = function(color) {
 	this.context.strokeStyle = color;
-	this.context.lineWidth = 2.0;
+	this.context.lineWidth = 1.0;
 	this.context.strokeRect(0, 0, this.width, this.height)
 }
 SnakeGame.prototype.key_hit = function(key) {
@@ -93,7 +93,7 @@ Snake.prototype.grow = function() {
 }
 Snake.prototype.collided = function(game) {
 	var head = this.body[0];
-	if (head.x < 0 || head.y < 0 || head.x > (game.width / game.grid_size) - 1 || head.x > (game.width / game.grid_size) - 1) {
+	if (head.x < 0 || head.y < 0 || head.x > ((game.width / game.grid_size) - 1) || head.y > (game.height / game.grid_size) - 1) {
 		return true;
 	}
 	for (var i = 1; i < this.body.length; i++) {
