@@ -96,3 +96,23 @@ PortalFood.prototype.eaten = function(game) {
         game.snake.body[0] = this.location;
     }
 }
+
+// BlurFood (blur the board for 3 seconds)
+var BlurFood = function(max_x, max_y) {
+    Food.call(this, max_x, max_y)
+    this.color = "#555555";
+}
+BlurFood.prototype = new Food();
+BlurFood.prototype.draw = function(game) {
+    game.context.fillStyle = "rgba(200, 200, 200, 1.0)";
+    game.context.shadowColor = "rgba(200, 200, 200, 1.0)";
+    game.context.shadowBlur = 8;
+    game.context.shadowOffsetX = 0;
+    game.context.shadowOffsetY = 0;
+    game.context.rect(this.location.x * game.grid_size, this.location.y * game.grid_size, game.grid_size, game.grid_size);
+    game.context.fill();
+}
+BlurFood.prototype.eaten = function(game) {
+    game.canvas.setAttribute("style", "-webkit-filter: blur(4px); -webkit-transition: all 2.5s ease-in-out;");
+    setTimeout(function() { game.canvas.setAttribute("style", "-webkit-filter: blur(0px); -webkit-transition: all 0.5s ease-in-out;"); }, 3000);
+}
