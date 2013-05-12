@@ -40,16 +40,9 @@ SnakeGame.prototype.draw_backgorund = function(color) {
 	this.context.fillRect(0, 0, this.width, this.height)
 }
 SnakeGame.prototype.draw_grid = function(color) {
-	this.context.beginPath();
-	this.context.moveTo(0, 0);
-	this.context.lineTo(0, this.height);
-	this.context.lineTo(this.width, this.height)
-	this.context.lineTo(this.width, 0);
-	this.context.lineTo(0, 0);
 	this.context.strokeStyle = color;
 	this.context.lineWidth = 2.0;
-	this.context.closePath();
-	this.context.stroke();
+	this.context.strokeRect(0, 0, this.width, this.height)
 }
 SnakeGame.prototype.key_hit = function(key) {
 	// Change snake direction
@@ -69,11 +62,20 @@ var Snake = function(begin_x, begin_y) {
 	this.body = [{x: begin_x, y: begin_y}];
 	this.growth_amount = 5;
 	this.direction = Direction.RIGHT;
+
+	this.movedThisTurn = false;
+	this.cachedMove = null;
 }
 Snake.prototype.move = function() {
 	var next = this.next_position();
 	this.body.pop();
 	this.body.unshift(next);
+	this.movedThisTurn = false;
+	if (this.cachedMove != null) {
+		this.direction = this.cachedMove;
+		this.cachedMove = null;
+		this.movedThisTurn = true;
+	}
 }
 Snake.prototype.grow = function() {
 	var next = this.next_position();
@@ -102,7 +104,12 @@ Snake.prototype.draw = function(game) {
 }
 Snake.prototype.apply_direction = function(new_direction) {
 	if (!Direction.are_opposite(this.direction, new_direction)) {
-		this.direction = new_direction;
+		if (this.movedThisTurn) {
+			this.cachedMove = new_direction;
+		} else {
+			this.direction = new_direction;
+			this.movedThisTurn = true;
+		}
 	}
 }
 Direction = {
