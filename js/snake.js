@@ -16,16 +16,18 @@ SnakeGame.prototype.game_loop = function() {
     	var _this = this;
     	setTimeout(function() { _this.game_loop() }, this.delay);
     }
-
     this.update_world();
-    if (this.food.collided(this.snake)) {
-		this.food.eaten(this);
-		this.food = new GrowFood(this.width / this.grid_size, this.height / this.grid_size);
-	}
 	this.draw_world();
 }
 SnakeGame.prototype.update_world = function() {
 	this.snake.move();
+	if (this.snake.collided(this)) {
+		this.reset();
+	}
+	if (this.food.collided(this.snake)) {
+		this.food.eaten(this);
+		this.food = new GrowFood(this.width / this.grid_size, this.height / this.grid_size);
+	}
 }
 SnakeGame.prototype.draw_world = function () {
 	this.draw_backgorund("#FFFFFF");
@@ -56,30 +58,50 @@ SnakeGame.prototype.key_hit = function(key) {
 		this.snake.apply_direction(Direction.RIGHT);
 	}
 }
+SnakeGame.prototype.reset = function() {
+	this.snake = new Snake(5, 10);
+	this.food = new GrowFood(this.width / this.grid_size, this.height / this.grid_size);
+	this.running = true;
+}
 
 // Snake
 var Snake = function(begin_x, begin_y) {
 	this.body = [{x: begin_x, y: begin_y}];
 	this.growth_amount = 5;
-	this.direction = Direction.RIGHT;
+	this.direction = Direction.NONE;
 
 	this.movedThisTurn = false;
 	this.cachedMove = null;
 }
 Snake.prototype.move = function() {
-	var next = this.next_position();
-	this.body.pop();
-	this.body.unshift(next);
-	this.movedThisTurn = false;
-	if (this.cachedMove != null) {
-		this.direction = this.cachedMove;
-		this.cachedMove = null;
-		this.movedThisTurn = true;
+	if (this.direction != Direction.NONE) {
+		var next = this.next_position();
+		this.body.pop();
+		this.body.unshift(next);
+		this.movedThisTurn = false;
+		if (this.cachedMove != null) {
+			this.direction = this.cachedMove;
+			this.cachedMove = null;
+			this.movedThisTurn = true;
+		}
 	}
 }
 Snake.prototype.grow = function() {
 	var next = this.next_position();
 	this.body.unshift(next);
+}
+Snake.prototype.collided = function(game) {
+	var head = this.body[0];
+	if (head.x < 0 || head.y < 0 || head.x > (game.width / game.grid_size) - 1 || head.x > (game.width / game.grid_size) - 1) {
+		return true;
+	}
+	for (var i = 1; i < this.body.length; i++) {
+		var snake_part = this.body[i];
+		if (head.x == snake_part.x && head.y == snake_part.y) {
+			return true;
+		}
+	}
+	return false;
 }
 Snake.prototype.next_position = function() {
 	var head = this.body[0];
@@ -117,6 +139,7 @@ Direction = {
 	RIGHT: 1,
 	UP: -2,
 	DOWN: 2,
+	NONE: 0,
 	are_opposite: function(a, b) {
 		return (a == -b);
 	}
