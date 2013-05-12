@@ -21,8 +21,10 @@ Snake.prototype.move = function() {
 }
 Snake.prototype.grow = function() {
 	var last = this.body[this.body.length - 1];
-	var next = {x:last.x, y:last.y}
-	this.body.push(next);
+	for (var i = 0; i < this.growth_amount; i++) {
+		var next = {x:last.x, y:last.y}
+		this.body.push(next);
+	}
 }
 Snake.prototype.collided = function(game) {
 	var head = this.body[0];
