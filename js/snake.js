@@ -87,8 +87,9 @@ Snake.prototype.move = function() {
 	}
 }
 Snake.prototype.grow = function() {
-	var next = this.next_position();
-	this.body.unshift(next);
+	var last = this.body[this.body.length - 1];
+	var next = {x:last.x, y:last.y}
+	this.body.push(next);
 }
 Snake.prototype.collided = function(game) {
 	var head = this.body[0];
