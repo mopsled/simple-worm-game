@@ -47,10 +47,12 @@ SnakeGame.prototype.draw_grid = function(color) {
 SnakeGame.prototype.pick_random_food = function() {
     var food = new GrowFood(this.width / this.grid_size, this.height / this.grid_size);;
     var random = Math.floor(Math.random() * 100) + 1;
-    if (random > 60 && random <= 80) {
+    if (random > 75 && random <= 85) {
         food = new ExtraGrowFood(this.width / this.grid_size, this.height / this.grid_size);
-    } else if (random > 80) {
+    } else if (random > 85 && random <= 95) {
         food = new PortalFood(this.width / this.grid_size, this.height / this.grid_size);
+    } else if (random > 95) {
+        food = new BlurFood(this.width / this.grid_size, this.height / this.grid_size);
     }
     return food;
 }
